@@ -82,6 +82,9 @@
 .button:hover {
   transform: translateY(-5px);
 }
+.button:disabled {
+  filter: grayscale(0.5);
+}
 
 * {
   font-family: "Roboto Condensed", sans-serif;

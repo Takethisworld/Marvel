@@ -1,73 +1,63 @@
 import "./randomChar.scss";
 import mjolner from "../../resource/img/mjolnir.png";
-import { Component } from "react";
+import { useState, useEffect } from "react";
 import MarvelService from "../marvelService/MarvelService";
 import Spinner from "../spinner/Spinner";
 import ErrorMessage from "../errorMessage/ErrorMessage";
 
-class RandomChar extends Component {
-  state = {
-    char: {},
-    loading: true,
-    error: false,
-  };
+const RandomChar = () => {
+  const [char, setChar] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
-  marvelService = new MarvelService();
+  const marvelService = new MarvelService();
 
-  componentDidMount() {
-    this.updateChar();
-    this.timerId = this.updateChar;
-  }
+  useEffect(() => {
+    updateChar();
+    const timerId = setInterval(updateChar, 60000);
+  }, []);
 
-  componentWillUnmount() {
-    this.updateChar();
-    clearInterval(this.timerId);
-  }
-  onCharLoaded = (char) => {
-    this.setState({ char, loading: false });
-  };
-
-  onError = () => {
-    this.setState({ error: true, loading: false });
-  };
-
-  updateChar = () => {
+  const updateChar = () => {
     const id = Math.floor(Math.random() * (1011400 - 1011000) + 1011000);
-    this.marvelService
-      .getCharacter(id)
-      .then(this.onCharLoaded)
-      .catch(this.onError);
+    marvelService.getCharacter(id).then(onCharLoaded).catch(onError);
   };
 
-  render() {
-    const { loading, char, error } = this.state;
-    const errorMessage = error ? <ErrorMessage /> : null;
-    const loadingSpinner = loading ? <Spinner /> : null;
-    const content = !(loading || error) ? <View char={char} /> : null;
+  const onCharLoaded = (char) => {
+    setChar(char);
+    setLoading(false);
+  };
 
-    return (
-      <div className="randomchar">
-        {errorMessage}
-        {loadingSpinner}
-        {content}
-        <div className="randomchar__static">
-          <p className="randomchar__title">
-            Random character for today!
-            <br />
-            Do you want to get to know him better?
-          </p>
-          <p className="randomchar__title">Or choose another one</p>
-          <button className="button button__main">
-            <div className="inner" onClick={this.updateChar}>
-              try it
-            </div>
-          </button>
-          <img src={mjolner} alt="mjolnir" className="randomchar__decoration" />
-        </div>
+  const onError = () => {
+    setError(true);
+    setLoading(false);
+  };
+
+  const errorMessage = error ? <ErrorMessage /> : null;
+  const loadingSpinner = loading ? <Spinner /> : null;
+  const content = !(loading || error) ? <View char={char} /> : null;
+
+  return (
+    <div className="randomchar">
+      {errorMessage}
+      {loadingSpinner}
+      {content}
+      <div className="randomchar__static">
+        <p className="randomchar__title">
+          Random character for today!
+          <br />
+          Do you want to get to know him better?
+        </p>
+        <p className="randomchar__title">Or choose another one</p>
+        <button className="button button__main">
+          <div className="inner" onClick={updateChar}>
+            try it
+          </div>
+        </button>
+        <img src={mjolner} alt="mjolnir" className="randomchar__decoration" />
       </div>
-    );
-  }
-}
+    </div>
+  );
+};
 const View = ({ char }) => {
   const { name, description, thumbnail, homepage, wiki } = char;
 

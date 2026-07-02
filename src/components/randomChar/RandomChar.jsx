@@ -8,20 +8,21 @@ import ErrorMessage from "../errorMessage/ErrorMessage";
 const RandomChar = () => {
   const [char, setChar] = useState({});
 
-  const { getCharacter, error, loading } = useMarvelService();
+  const { getCharacter, error, loading, clearError } = useMarvelService();
+  // useEffect(() => {
+  //   updateChar();
+  //   const timerId = setInterval(updateChar, 60000);
 
-  useEffect(() => {
-    updateChar();
-    const timerId = setInterval(updateChar, 60000);
-
-    return () => {
-      clearInterval(timerId);
-    };
-  }, []);
+  //   return () => {
+  //     clearInterval(timerId);
+  //   };
+  // }, []);
 
   const updateChar = () => {
-    const id = Math.floor(Math.random() * (1011400 - 1011000) + 1011000);
-    getCharacter(id).then(onCharLoaded).catch(error);
+    clearError();
+    const id = Math.floor(Math.random() * (2000 - 1000) + 1000);
+    console.log("Запрашиваю персонажа с ID:", id);
+    getCharacter(id).then(onCharLoaded);
   };
 
   const onCharLoaded = (char) => {
@@ -30,8 +31,8 @@ const RandomChar = () => {
 
   const errorMessage = error ? <ErrorMessage /> : null;
   const loadingSpinner = loading ? <Spinner /> : null;
-  const content = !(loading || error) ? <View char={char} /> : null;
 
+  const content = !(loading || error || !char) ? <View data={char} /> : null;
   return (
     <div className="randomchar">
       {errorMessage}
@@ -54,20 +55,32 @@ const RandomChar = () => {
     </div>
   );
 };
-const View = ({ char }) => {
-  const { name, description, thumbnail, homepage, wiki } = char;
 
+const View = ({ data }) => {
+  const { name, image } = data;
+  let imgStyle = { objectFit: "contain" };
+  if (
+    image ===
+    "http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg"
+  ) {
+    imgStyle = { objectFit: "cover" };
+  }
   return (
     <div className="randomchar__block">
-      <img src={thumbnail} alt="Random character" className="randomchar__img" />
+      <img
+        src={image}
+        alt="Random character"
+        className="randomchar__img"
+        style={imgStyle}
+      />
       <div className="randomchar__info">
         <p className="randomchar__name">{name}</p>
-        <p className="randomchar__descr">{description}</p>
+        <p className="randomchar__descr">{`description`}</p>
         <div className="randomchar__btns">
-          <a href={homepage} className="button button__main">
+          <a className="button button__main">
             <div className="inner">Homepage</div>
           </a>
-          <a href={wiki} className="button button__secondary">
+          <a className="button button__secondary">
             <div className="inner">Wiki</div>
           </a>
         </div>

@@ -51,12 +51,11 @@ const CharList = (props) => {
       const items = arr.map((item, i) => {
         let imgStyle = { objectFit: "cover" };
         if (
-          item.thumbnail ===
+          item ===
           "http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg"
         ) {
           imgStyle = { objectFit: "unset" };
         }
-
         return (
           <li
             className="char__item"
@@ -73,7 +72,7 @@ const CharList = (props) => {
               }
             }}
           >
-            <img src={item.thumbnail} alt={item.name} style={imgStyle} />
+            <img src={item.image} alt={item.name} style={imgStyle} />
             <div className="char__name">{item.name}</div>
           </li>
         );

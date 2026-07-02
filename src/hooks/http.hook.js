@@ -14,10 +14,14 @@ const useHttp = () => {
         throw new Error(`Couldn't fetch ${url} because ${response.status}`);
       }
       const data = await response.json();
-      return data;
-    } catch (e) {
-      setError(e.message);
+      console.log(data);
+
       setLoading(false);
+      return data;
+
+    } catch (e) {
+      setLoading(false);
+      setError(e.message);
       throw e;
     }
   }, []);
